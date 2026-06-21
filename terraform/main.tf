@@ -6,18 +6,18 @@ provider "aws" { region = var.aws_region }
 data "terraform_remote_state" "base_infra" {
   backend = "s3"
   config = {
-    bucket = "ssp-terraform-state-bucket"
+    bucket = "ssp-terraform-state-bucket-kuntal2098"
     key    = "infrastructure/base/terraform.tfstate"
     region = var.aws_region
   }
 }
 module "ecr" {
-  source          = "../../terraform-infra-child/modules/ecr"
+  source          = "git::https://github.com/DeathGod049/terraform-infra-child.git//modules/ecr?ref=v0.1.0"
   repository_name = "ssp-api-gateway"
   environment     = var.environment
 }
 module "ecs_service" {
-  source              = "../../terraform-infra-child/modules/ecs-service"
+  source              = "git::https://github.com/DeathGod049/terraform-infra-child.git//modules/ecs-service?ref=v0.1.0"
   service_name        = "ssp-api-gateway"
   environment         = var.environment
   cluster_id          = data.terraform_remote_state.base_infra.outputs.ecs_cluster_id
