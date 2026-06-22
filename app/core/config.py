@@ -21,12 +21,16 @@ class Settings:
             return response["Parameter"]["Value"]
         except ClientError as e:
             print(f"Error fetching parameter {name}: {e}")
+            # Fallback to service discovery names if SSM parameter is not found
+            if name.endswith("-url"):
+                service_name = name.replace("-url", "")
+                return f"http://ssp-{service_name}.ssp.local:80"
             return None
 
 
 settings = Settings()
 
-# Fetching details from SSM
+# Fetching details from SSM, with a fallback to Cloud Map DNS names
 SERVICE_URLS = {
     "auth": settings.get_parameter("auth-url"),
     "product": settings.get_parameter("product-url"),
